@@ -1,1 +1,1 @@
-swiftc main.swift -o hex.exe
+swiftc src\main.swift -o hex.exe

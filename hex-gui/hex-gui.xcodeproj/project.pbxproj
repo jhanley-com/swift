@@ -11,6 +11,7 @@
 		D18A076128ECE8BC00D4A185 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18A076028ECE8BC00D4A185 /* ContentView.swift */; };
 		D18A076328ECE8C400D4A185 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D18A076228ECE8C400D4A185 /* Assets.xcassets */; };
 		D18A076628ECE8C400D4A185 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D18A076528ECE8C400D4A185 /* Preview Assets.xcassets */; };
+		D18A076E28ECF66400D4A185 /* ProcessFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18A076D28ECF66300D4A185 /* ProcessFile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		D18A076228ECE8C400D4A185 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D18A076528ECE8C400D4A185 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D18A076728ECE8C400D4A185 /* hex_gui.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = hex_gui.entitlements; sourceTree = "<group>"; };
+		D18A076D28ECF66300D4A185 /* ProcessFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +54,7 @@
 		D18A075D28ECE8BC00D4A185 /* hex-gui */ = {
 			isa = PBXGroup;
 			children = (
+				D18A076D28ECF66300D4A185 /* ProcessFile.swift */,
 				D18A075E28ECE8BC00D4A185 /* hex_guiApp.swift */,
 				D18A076028ECE8BC00D4A185 /* ContentView.swift */,
 				D18A076228ECE8C400D4A185 /* Assets.xcassets */,
@@ -141,6 +144,7 @@
 			files = (
 				D18A076128ECE8BC00D4A185 /* ContentView.swift in Sources */,
 				D18A075F28ECE8BC00D4A185 /* hex_guiApp.swift in Sources */,
+				D18A076E28ECF66400D4A185 /* ProcessFile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,7 +281,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.90.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jhanley.hex-gui";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -302,7 +307,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.90.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jhanley.hex-gui";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -18,7 +18,7 @@ I am writing both command-line programs for Windows and Ubuntu and native macOS 
 ## Programs
 
 ***
-### [hex](hex/README.md)
+### [hex](hex)
 
 This program dumps the contents of a file in both hex and ASCII.
 ***

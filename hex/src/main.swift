@@ -171,7 +171,7 @@ func print_hex(_ ptr: Data, _ offset: Int64, _ maxbytes: Int64) {
 
 		// If count is zero, display the current offset
 		if count == 0 {
-			print(String(format: "%04X ", offset + off), terminator: "")
+			print(String(format: "%08X ", offset + off), terminator: "")
 		}
 
 		// Add a space character after 8 characters to make the hex easier to read

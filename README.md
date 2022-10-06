@@ -25,3 +25,7 @@ This program dumps the contents of a file in both hex and ASCII.
 ### [hex-gui](hex-gui)
 
 SwiftUI port of the hex program to macOS Monterey
+***
+### [MyIP](MyIP)
+
+Display public IP address. Written for macOS, iPad and iPhone.

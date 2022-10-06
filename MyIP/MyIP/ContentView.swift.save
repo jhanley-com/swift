@@ -1,0 +1,208 @@
+//
+//	ContentView.swift
+//	MyIP
+//
+//	Created by John Hanley on 10/5/22.
+//
+
+import SwiftUI
+
+struct ContentView: View {
+	@State var myip = ""
+	@Environment(\.scenePhase) var scenePhase
+	@State var refresh = true
+	@State private var selectedServer = "random"
+	// FIX: combine servers and fservers
+	let servers = [
+		"random": getIP,
+		"aws": getIP_aws,
+		"ifconfig": getIP_ifconfig,
+		"ipecho": getIP_ipecho,
+		"ipinfo": getIP_ipinfo,
+		"jhanley": getIP_jhanley
+	]
+	@State private var lastError = ""
+
+	let timer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
+
+	var body: some View {
+		VStack {
+			Section {
+				Picker("Server:", selection: $selectedServer) {
+					/*
+					for (name, function) in servers {
+						Text(name)
+					}
+					*/
+					ForEach(servers, id: \.self) {
+						Text($0)
+					}
+					servers.forEach {
+						let (name, function) = $0
+						print(name)
+					}
+				}
+				.onChange(of: selectedServer) { _ in
+					print("Server changed")
+					getIP()
+				}
+				.frame(width: 200)
+				.clipped()
+				Spacer()
+				Text(myip)
+				.onReceive(timer) { _ in
+					getIP()
+				}
+			}
+			Spacer()
+			Text(lastError)
+			Button("Refresh") {
+				getIP()
+			}
+		}
+		.frame(minWidth: 100, minHeight: 50)
+		.frame(maxWidth: 600, maxHeight: 600)
+		.onAppear {
+			getIP()
+		}
+		.padding()
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				print("Active")
+				refresh = true
+				getIP()
+			} else if newPhase == .inactive {
+				print("Inactive")
+				refresh = false
+			} else if newPhase == .background {
+				print("Background")
+				refresh = false
+			}
+		}
+	}
+
+	func getIP() {
+/*
+		let fservers = [
+			getIP_aws,
+			getIP_ifconfig,
+			getIP_ipecho,
+			getIP_ipinfo,
+			getIP_jhanley
+		]
+
+		switch selectedServer {
+			case "aws":
+				getIP_aws()
+			case "ifconfig":
+				getIP_ifconfig()
+			case "ipecho":
+				getIP_ipecho()
+			case "ipinfo":
+				getIP_ipinfo()
+			case "jhanley":
+				getIP_jhanley()
+			case "random":
+				let n = Int(arc4random_uniform(UInt32(fservers.count)))
+				fservers[n]()
+			default:
+				getIP_aws()
+		}
+*/
+		servers[selectedServer]()
+	}
+
+	func getIP_fromStringResponse(_ url: URL?) {
+		if refresh == false {
+			// print("scenePhase: \(scenePhase)")
+			print("SKIP")
+			return
+		}
+
+		lastError = ""
+
+		let task = URLSession.shared.dataTask(with: url!) { data, response, error in
+			guard error == nil else {
+				myip = ""
+				print("error: \(error!)")
+				lastError = "\(error?.localizedDescription ?? "")"
+				return
+			}
+
+			let httpStatus = response as! HTTPURLResponse
+
+			print("Status Code: \(httpStatus.statusCode)")
+
+			if httpStatus.statusCode < 200 || httpStatus.statusCode >= 300 {
+				myip = ""
+				lastError = "HTTP Status Code: \(httpStatus.statusCode)"
+				return
+			}
+
+			guard let data = data else{
+				myip = ""
+				print("no data")
+				lastError = "no data"
+				return
+			}
+
+			lastError = ""
+
+			myip = String(decoding: data, as: UTF8.self)
+
+			let df = DateFormatter()
+			df.dateFormat = "HH:mm:ss"
+			let currentTime = df.string(from: Date())
+			print("\(currentTime): myip = \(myip)")
+		}
+		task.resume()
+
+		return
+	}
+
+	func getIP_aws() {
+		print("getIP_aws()")
+
+		let url = URL(string: "https://checkip.amazonaws.com/")
+
+		getIP_fromStringResponse(url)
+	}
+
+	func getIP_ifconfig() {
+		print("getIP_ifconfig()")
+
+		let url = URL(string: "https://ifconfig.me")
+
+		getIP_fromStringResponse(url)
+	}
+
+	func getIP_ipecho() {
+		print("getIP_ipecho()")
+
+		let url = URL(string: "https://ipecho.net/plain")
+
+		getIP_fromStringResponse(url)
+	}
+
+	func getIP_ipinfo() {
+		print("getIP_ipinfo()")
+
+		let url = URL(string: "https://ipinfo.io/ip")
+
+		getIP_fromStringResponse(url)
+	}
+
+	func getIP_jhanley() {
+		print("getIP_jhanley()")
+
+		let url = URL(string: "https://www.jhanley.com/myip")
+
+		getIP_fromStringResponse(url)
+	}
+}
+
+struct ContentView_Previews: PreviewProvider {
+	static var previews: some View {
+		ContentView()
+	}
+}

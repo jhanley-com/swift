@@ -1,0 +1,1 @@
+open build/MyIP.app

@@ -1,0 +1,9 @@
+.build
+.vscode
+.dockerignore
+Dockerfile
+notes.txt
+*.bak
+*.bat
+*.md
+*.swp

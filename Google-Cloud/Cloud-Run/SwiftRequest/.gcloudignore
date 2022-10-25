@@ -1,0 +1,12 @@
+.gcloudignore
+.git
+.gitignore
+*.md
+copyright.txt
+LICENSE
+notes.txt
+Package.resolved
+tools/
+.build/
+.vscode/
+#!include:.gitignore

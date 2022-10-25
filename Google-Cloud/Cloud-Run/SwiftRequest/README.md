@@ -13,25 +13,25 @@ This program displays details on the HTTP request, container environment and dir
 
 ## Program Source Code
 
-The main program is src\main.swift. This program depends on the [swifter](https://github.com/httpswift/swifter) http server engine written in Swift.
+The main program is [src\main.swift](src/main.swift). This program depends on the [swifter](https://github.com/httpswift/swifter) http server engine written in Swift.
 
 ## Setup
 
 Clone the repository to your Windows system. This project will also work on macOS and Linux but the scripts in the tools\windows directory are written for Windows. I plan to port the tools\windows directory to linux and macOS in the future.
 
-Edit the file tools\windows\gcp_build.bat and set the IMAGE_NAME and PROJECT_ID variables.
+Edit the file [tools\windows\gcp_build.bat](tools/windows/gcp_build.bat) and set the IMAGE_NAME and PROJECT_ID variables.
 
-Edit the file tools\windows\gcp_deploy.bat and set the IMAGE_NAME, PROJECT_ID and REGION variables.
+Edit the file [tools\windows\gcp_deploy.bat](tools/windows/gcp_deploy.bat) and set the IMAGE_NAME, PROJECT_ID and REGION variables.
 
 ## Build Container
 
-Run the script tools\windows\gcp_build.bat
+Run the script [tools\windows\gcp_build.bat](tools/windows/gcp_build.bat)
 
 The Dockerfile is a multi-stage build to reduce container size.
 
 ## Deploy Container
 
-Run the script tools\windows\gcp_deploy.bat
+Run the script [tools\windows\gcp_deploy.bat](tools/windows/gcp_deploy.bat)
 
 ## Local Development and Testing
 
@@ -47,7 +47,7 @@ The script tools\windows\clean.bat deletes the .build directory to remove artifa
 
 ## Tested Environments
  - Swift version 5.7
- - Ubuntu 22.04 container swift-slim
+ - Ubuntu 22.04 container [swift-slim](https://hub.docker.com/_/swift)
  - macOS Monterey 12.6
 
 ## Failed Environments

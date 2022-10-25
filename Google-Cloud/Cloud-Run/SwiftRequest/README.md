@@ -55,3 +55,7 @@ The script tools\windows\clean.bat deletes the .build directory to remove artifa
 
 ## Known Bugs
 None.
+
+## Screenshot
+
+![program screenshot](screenshot.png?raw=true "program screenshot")

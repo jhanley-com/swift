@@ -4,7 +4,7 @@
 September 30, 2022
 
 ## Last Updated
-November 27, 2022
+November 29, 2022
 
 ## License
 
@@ -40,3 +40,7 @@ Displays details on the HTTP request, container environment and directory conten
 ### [Gist-List](GitHub/Gist/Gist-List)
 
 This program duplicates the GitHub CLI command: `gh gist list`
+***
+### [Auth-Device](GitHub/Auth/Device-Authorization-Grant)
+
+This program generates a GitHub token using Device Authorization Grant

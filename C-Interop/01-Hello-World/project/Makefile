@@ -3,6 +3,9 @@ OUTDIR = build
 
 CFLAGS = /c /MD /W4 -Ih
 
+# /MD    Creates a multithreaded DLL using MSVCRT.lib.
+# /MDd   Creates a debug multithreaded DLL using MSVCRTD.lib.
+
 all: $(OBJDIR) $(OUTDIR) $(OUTDIR)/main.exe
 
 $(OBJDIR):

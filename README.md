@@ -4,7 +4,7 @@
 September 30, 2022
 
 ## Last Updated
-December 4, 2022
+December 8, 2022
 
 ## License
 
@@ -12,7 +12,7 @@ MIT Licensed. Refer to LICENSE for details.
 
 ## Description
 
-This repository is a collection of software that I am writing while learning the Swift language and Apple software development.
+This repository is a collection of software that I am writing while learning the Swift language and Apple software development. This software is student quality. My goal is to be able to measure my progress as I learn Swift on Windows, Linux and Apple devices.
 
 For the most part these programs are for systems level development. Database, network, memory and device integration. Everything I will need to develop home automation using controllers, macOS, iPads and iPhones. I hope to learn how to send alerts to Apple Watch as well
 

@@ -1,0 +1,69 @@
+# PATH_OPENSSL points to the root instalation of OpenSSL Win64
+# Default install path
+PATH_OPENSSL = C:\Program Files\OpenSSL-Win64
+
+# Custom install paths for testing specific versions
+# PATH_OPENSSL = C:\openssl-1.1.1s
+# PATH_OPENSSL = C:\openssl-3.0.7
+
+# Program executable
+EXE = $(OUTDIR)\gcp-verify.exe
+
+SRC = src
+INC = h
+OBJDIR = obj
+OUTDIR = build
+
+INC_OPENSSL = "$(PATH_OPENSSL)\include"
+
+CFLAGS = /nologo /c /MD /DOS_WINDOWS /W4 -Ih -I$(INC_OPENSSL)
+
+# /MD    Links to multithreaded DLL using MSVCRT.lib.
+# /MDd   Links to debug multithreaded DLL using MSVCRTD.lib.
+
+# swiftc compiler flags
+SWIFT_FLAGS = -Xcc -I$(INC_OPENSSL)
+
+APPLINK = "$(PATH_OPENSSL)/include/openssl/applink.c"
+
+# Microsoft linker flags
+LINKER = -Xlinker /LIBPATH:"$(PATH_OPENSSL)/lib/vc"
+
+SRC_FILES = \
+	$(SRC)/main.swift\
+	$(SRC)/exec.swift\
+	$(SRC)/hex.swift\
+	$(SRC)/service_account.swift\
+	$(SRC)/signature.swift\
+	$(SRC)/terminal.swift\
+	$(SRC)/verify.swift\
+	$(SRC)/x509.swift 
+
+OBJs = \
+	$(OBJDIR)/applink.obj\
+	$(OBJDIR)/openssl.obj
+
+all: $(OBJDIR) $(OUTDIR) $(EXE)
+
+run: all
+	$(EXE)
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
+
+$(OUTDIR):
+	mkdir $(OUTDIR)
+
+$(EXE): $(OBJs) $(SRC_FILES) Makefile.w64
+	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(OBJs) -o $(EXE) $(LINKER)
+
+$(OBJDIR)/openssl.obj: $(SRC)/openssl.c $(INC)/c-interface.h Makefile.w64
+	cl $(CFLAGS) $(SRC)/openssl.c /Fo$@
+
+$(OBJDIR)/applink.obj: $(APPLINK) Makefile.w64
+	cl $(CFLAGS) /wd4152 /wd4996 $(APPLINK) /Fo$@
+
+.PHONY: clean   
+clean:
+	rm -rf $(OBJDIR)
+	rm -rf $(OUTDIR)

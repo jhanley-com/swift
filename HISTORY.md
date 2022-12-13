@@ -7,3 +7,5 @@
  - 2022-11-27 - Gist-List: duplicates the GitHub CLI command: `gh gist list`
  - 2022-11-29 - Auth-Device: GitHub Device Authorization Grant
  - 2022-12-04 - C-Interop: Added a simple hello-world example
+ - 2022-12-12 - gcp-sign: Sign data using a Google Cloud service account JSON key file
+ - 2022-12-12 - gcp-verify: Verify data using a Google Cloud service account certificate

@@ -4,7 +4,7 @@
 September 30, 2022
 
 ## Last Updated
-December 8, 2022
+December 12, 2022
 
 ## License
 
@@ -48,3 +48,11 @@ This program generates a GitHub token using Device Authorization Grant
 ### [C-Interop/Hello-World](C-Interop/01-Hello-World)
 
 Demonstrates a simple Hello World program written in Swift that calls a C function.
+***
+### [gcp-sign](Google-Cloud/Service-Accounts/gcp-sign)
+
+Sign data using a Google Cloud service account JSON key file.
+***
+### [gcp-verify](Google-Cloud/Service-Accounts/gcp-verify)
+
+Verify data using a Google Cloud service account certificate.

@@ -9,6 +9,8 @@ MIT Licensed. Refer to copyright.txt and LICENSE for details.
 
 ## Program Description
 
+Supports Linux and Windows in this release. I have tested on macOS.
+
 This program downloads a Google Cloud service account public certificate, extracts the public key, and verifies an RS256 (RSA + SHA256) signature. The signature is read from a JSON structure written by the matching program `gcp-sign`.
 
 This program duplicates the functionality of openssl:
@@ -88,13 +90,19 @@ Tested with "Win64 OpenSSL v1.1.1s" downloaded from:
 
 ## Configure
 
+### Windows
 Modify the Makefile.w64 to specify the OpenSSL installation path for `PATH_OPENSSL`.
+
+### Linux
+Modify the Makefile.linux to specify the OpenSSL installation path for `PATH_OPENSSL`.
 
 This program does not require a Google CLoud service account JSON key. The public key is downloaded from Google's website, no API calls to Google Cloud IAM are made.
 
  - https://cloud.google.com/iam/docs/creating-managing-service-account-keys
 
 ## Build
+
+### Windows
 
 Start a Visual Studio x64 Native Tools Command Prompt.
 
@@ -104,8 +112,17 @@ Use the batch script `make.bat` or type:
 
 The C and Swift source files are compiled and the executable `gcp-verify.exe` is placed in the build directory.
 
+### Linux
+
+Use the batch script `make.sh` or type:
+
+`nmake -f Makefile.linux`
+
+The C and Swift source files are compiled and the executable `gcp-verify` is placed in the build directory.
+
 ## Tested Environments
  - Windows 10 - Swift version 5.7.1, Visual Studio 2022 x64
+ - Ubuntu 22.04 - Swift version 5.7.1, gcc version 11.3.0
 
 ## Limitations
  - None

@@ -106,4 +106,25 @@ func readStdinInBinaryMode() -> Data {
 
 	return data
 }
+#elseif os(Linux)
+func readStdinInBinaryMode() -> Data {
+	// This function tested on Ubuntu 22.04
+
+	var data = Data()
+
+	freopen(nil, "rb", stdin)
+
+	while true {
+		let buf = UnsafeMutablePointer<UInt8>.allocate(capacity: 65536)
+
+		let count = fread(buf, 1, 65536, stdin)
+
+		if count <= 0 {
+			break;
+		}
+		data.append(Data(bytes: buf, count: count))
+	}
+
+	return data
+}
 #endif

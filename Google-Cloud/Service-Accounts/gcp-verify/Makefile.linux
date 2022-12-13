@@ -1,10 +1,11 @@
 # PATH_OPENSSL points to the root instalation of OpenSSL Win64
 # Default install path
-PATH_OPENSSL = /openssl/openssl-1.1.1k
+PATH_OPENSSL = /usr/include
+PATH_OPENSSL_LIB = /usr/local/lib
 
 # Custom install paths for testing specific versions
-# PATH_OPENSSL = C:/openssl-1.1.1s
-# PATH_OPENSSL = C:/openssl-3.0.7
+# PATH_OPENSSL = /openssl/openssl-1.1.1k
+# PATH_OPENSSL_LIB = /openssl/openssl-1.1.1k
 
 # Program executable
 EXE = $(OUTDIR)/gcp-verify
@@ -25,7 +26,7 @@ APPLINK = "$(PATH_OPENSSL)/include/openssl/applink.c"
 
 # Linux linker flags
 # LINKER = -Xlinker -L$(PATH_OPENSSL) -Xlinker -llibssl.a -Xlinker -llibcrypto.a
-LINKER = -Xlinker -l$(PATH_OPENSSL)/libssl.a -Xlinker -l$(PATH_OPENSSL)/libcrypto.a
+LINKER = -Xlinker -l$(PATH_OPENSSL_LIB)/libssl.a -Xlinker -l$(PATH_OPENSSL_LIB)/libcrypto.a
 
 SRC_FILES = \
 	$(SRC)/main.swift\

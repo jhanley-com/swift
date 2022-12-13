@@ -82,11 +82,19 @@ Requires Visual Studio and Swift installed on the system. The make tool is from 
 
 ### Install OpenSSL.
 
+#### Windows
+
 Tested with "Win64 OpenSSL v1.1.1s" downloaded from:
  - Download link: https://slproweb.com/download/Win64OpenSSL-1_1_1s.msi
 
  Tested with "Win64 OpenSSL v3.0.7" downloaded from:
  - Download link: https://slproweb.com/products/Win32OpenSSL.html
+
+Note: Install the package built for developers.
+
+#### Linux
+
+apt-get install openssl libssl-dev
 
 ## Configure
 

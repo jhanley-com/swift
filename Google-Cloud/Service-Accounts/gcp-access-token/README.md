@@ -39,6 +39,7 @@ This program creates a Google OAuth Access Token from a Service Account JSON key
 | -h, --help       | Display help text           |
 | -v, --version    | Display version information |
 | --debug          | Enable Debug Mode           |
+| --duration=sec   | Token lifetime in seconds   |
 | --out=filename   | Filename to save token. If not specified, write to stdout |
 | --sa=path        | Path to service account JSON key file |
 | --scopes=scopes  | Scopes to request (comma separated). Defaults to cloud-platform |

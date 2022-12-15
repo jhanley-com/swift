@@ -7,26 +7,23 @@ PATH_OPENSSL_LIB = /usr/local/lib
 # PATH_OPENSSL = /openssl/openssl-1.1.1k
 # PATH_OPENSSL_LIB = /openssl/openssl-1.1.1k
 
+SRC = src
+INC = h
+OUTDIR = build-linux
+OBJDIR = $(OUTDIR)/obj
+
 # Program executable
 EXE = $(OUTDIR)/gcp-verify
 
-SRC = src
-INC = h
-OBJDIR = obj
-OUTDIR = build
-
 INC_OPENSSL = "$(PATH_OPENSSL)/include"
 
-CFLAGS = /c -DOS_LINUX -Ih -I$(INC_OPENSSL)
+CFLAGS = -c -DOS_LINUX -Ih -I$(INC_OPENSSL)
 
 # swiftc compiler flags
 SWIFT_FLAGS = -Xcc -I$(INC_OPENSSL)
 
-APPLINK = "$(PATH_OPENSSL)/include/openssl/applink.c"
-
 # Linux linker flags
-# LINKER = -Xlinker -L$(PATH_OPENSSL) -Xlinker -llibssl.a -Xlinker -llibcrypto.a
-LINKER = -Xlinker -l$(PATH_OPENSSL_LIB)/libssl.a -Xlinker -l$(PATH_OPENSSL_LIB)/libcrypto.a
+LINKER = -Xlinker -L$(PATH_OPENSSL_LIB) -Xlinker -lssl -Xlinker -lcrypto
 
 SRC_FILES = \
 	$(SRC)/main.swift\
@@ -41,7 +38,7 @@ SRC_FILES = \
 OBJs = \
 	$(OBJDIR)/openssl.o
 
-all: $(OBJDIR) $(OUTDIR) $(EXE)
+all: $(OUTDIR) $(OBJDIR) $(EXE)
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
@@ -54,9 +51,6 @@ $(EXE): $(OBJs) $(SRC_FILES) Makefile.linux
 
 $(OBJDIR)/openssl.o: $(SRC)/openssl.c $(INC)/c-interface.h Makefile.linux
 	gcc -c -I./h -DOS_LINUX $(SRC)/openssl.c -o$@
-
-$(OBJDIR)/applink.o: $(APPLINK) Makefile.linux
-	gcc -c -I./h -DOS_LINUX $(APPLINKJ) -o$@
 
 clean:
 	rm -rf $(OBJDIR)

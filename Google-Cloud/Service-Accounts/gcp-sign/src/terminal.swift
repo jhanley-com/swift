@@ -127,4 +127,25 @@ func readStdinInBinaryMode() -> Data {
 
 	return data
 }
+#elseif os(macOS)
+func readStdinInBinaryMode() -> Data {
+	// This function tested on macOS Monterey
+
+	var data = Data()
+
+	freopen(nil, "rb", stdin)
+
+	while true {
+		let buf = UnsafeMutablePointer<UInt8>.allocate(capacity: 65536)
+
+		let count = fread(buf, 1, 65536, stdin)
+
+		if count <= 0 {
+			break;
+		}
+		data.append(Data(bytes: buf, count: count))
+	}
+
+	return data
+}
 #endif

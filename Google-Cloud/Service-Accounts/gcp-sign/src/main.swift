@@ -95,17 +95,27 @@ func ProcessCommandLine() {
 		}
 
 		if arg.starts(with: "--sa=") {
-			gcp_sa_file = arg.substring(from: 5)
+			// gcp_sa_file = arg.substring(from: 5)
+			let start = arg.index(arg.startIndex, offsetBy: 5)
+			let range = start...
+			gcp_sa_file = String(arg[range])
 			continue
 		}
 
 		if arg.starts(with: "--signature=") {
-			output_file = arg.substring(from: 12)
+			// output_file = arg.substring(from: 12)
+			let start = arg.index(arg.startIndex, offsetBy: 12)
+			let range = start...
+			output_file = String(arg[range])
 			continue
 		}
 
 		if arg.starts(with: "--format=") {
-			let format = arg.substring(from: 9)
+			// let format = arg.substring(from: 9)
+			let start = arg.index(arg.startIndex, offsetBy: 9)
+			let range = start...
+			let format = String(arg[range])
+
 			switch format {
 			case "base64":
 				signature_format = format

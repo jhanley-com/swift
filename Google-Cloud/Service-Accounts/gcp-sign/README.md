@@ -9,7 +9,7 @@ MIT Licensed. Refer to copyright.txt and LICENSE for details.
 
 ## Program Description
 
-Supports Linux and Windows in this release. I have tested on macOS.
+Supports macOS, Linux and Windows.
 
 This program reads a Google Cloud service account JSON key file, extracts the private key, and creates an RS256 (RSA + SHA256) signature. The signature is written as part of a JSON structure. The matching program `gcp-verify` reads the JSON structure and downloads the corresponding public certificate from Google's site.
 
@@ -32,11 +32,20 @@ This program generates a SHA256 hash and signs with the RSA private key from a s
 }
 ```
 
+The keys `private_key_id` and `client_x609_cert_url` are copies from the same keys in the service account JSON key file. Those fields are used by `gcp-verify` to download the public X509 certificate that matches the private key.
+
+The key `signature` is the encoded RS256 (RSA + SHA256) binary signature.
+
 `format` can be `base64`, `base64url`, `hex`.
+
+Examples:
+ - `gcp-sign --format=base64 filename`
+ - `gcp-sign --format=base64url filename`
+ - `gcp-sign --format=hex filename`
 
 ## Usage
 
-`gcp-sign [OPTIONS] filename`
+`gcp-sign [OPTIONS] [filename]`
 
 ### OPTIONS
 | Flag             | Description                 |
@@ -45,7 +54,7 @@ This program generates a SHA256 hash and signs with the RSA private key from a s
 | -v, --version    | Display version information |
 | --debug          | Enable Debug Mode           |
 | --sa=path        | Path to service account JSON key file |
-| --signature=path | Signature file. If not specified, write to stdout |
+| --signature=path | Signature file to create. If not specified, write to stdout |
 | --format=format  | Signature format. `base64` (default), `base64url`, `hex` |
 
 ### Environment variables
@@ -65,77 +74,90 @@ The signature can be written to `stdout` or to a file.
 
 ## Examples
 
-### Example 1: Read data from `stdin`, write signature to `stdout`, use service account specified by `GOOGLE_APPLICATION_CREDENTIALS`:
+#### Example 1: Read data from `stdin`, write signature to `stdout`, use service account specified by the environment variable `GOOGLE_APPLICATION_CREDENTIALS`:
  - `gcp-sign`
 
-### Example 2: Read data from `filename`, write signature to `stdout`, use service account specified by GOOGLE_APPLICATION_CREDENTIALS:
+#### Example 2: Read data from `filename`, write signature to `stdout`, use service account specified by the environment variable `GOOGLE_APPLICATION_CREDENTIALS`:
  - `gcp-sign filename`
 
-### Example 3: Read data from `filename`, write signature to `stdout`, use service account `service_account.json`:
+#### Example 3: Read data from `filename`, write signature to `stdout`, use service account `service_account.json`:
  - `gcp-sign --sa=service_account.json filename`
 
-### Example 4: Read data from `filename`, write signature to `filename.sig`, use service account `service_account.json`:
+#### Example 4: Read data from `filename`, write signature to `filename.sig`, use service account `service_account.json`:
  - `gcp-sign --sa=service_account.json --signature=filename.sig filename`
-
-### Example 5: Read data from `filename`, write signature to `filename.sig`, use service account `service_account.json`, hex signature format:
- - `gcp-sign --sa=service_account.json --signature=filename.sig --format=hex filename`
 
 ## Verify
 
-A matching program `gcp-verify` reads the signature file and validates the data signature. This program does not need access to the service account or private key. The public key is downloaded from Google during the verification process.
-
-The keys `private_key_id` and `client_x609_cert_url` provide the information necessary to download the public X509 certificate that matches the private key.
+A matching program `gcp-verify` reads the signature file and validates the data signature. The `gcp-verify` program does not need access to the service account or private key. The public certificate is downloaded from Google during the verification process.
 
  - `gcp-verify --signature=filename.sig filename`
 
-The key `format` is the signature format: base64 (default), base64url, hex.
-
-Examples:
- - `gcp-sign --format=base64 filename`
- - `gcp-sign --format=base64url filename`
- - `gcp-sign --format=hex filename`
-
-The keys `private_key_id` and `client_x609_cert_url` are copies from the same keys in the service account JSON key file. Those fields are used by `gcp-verify` to download the public X509 certificate that matches the private key.
-
-The key `signature` is the base64 encoded RS256 (RSA + SHA256) binary signature.
-
 ## Requirements
 
-Requires Visual Studio and Swift installed on the system. The make tool is from Visual Studio.
+### Linux
 
-### Install Visual Studio:
+#### Install OpenSSL.
+`apt-get install openssl libssl-dev`
+
+### macOS
+
+#### Install OpenSSL.
+`brew install openssl@1.1`
+
+### Windows
+Requires Visual Studio, OpenSSL and Swift installed on the system. The make tool is from Visual Studio.
+
+#### Install Visual Studio:
 
  - Download link: https://visualstudio.microsoft.com/vs/community/
 
-### Install OpenSSL.
+#### Install OpenSSL.
 
-#### Windows
+Download page: https://slproweb.com/products/Win32OpenSSL.html
 
 Tested with "Win64 OpenSSL v1.1.1s" downloaded from:
  - Download link: https://slproweb.com/download/Win64OpenSSL-1_1_1s.msi
 
  Tested with "Win64 OpenSSL v3.0.7" downloaded from:
- - Download link: https://slproweb.com/products/Win32OpenSSL.html
+ - Download link: https://slproweb.com/download/Win64OpenSSL-3_0_7.msi
 
 Note: Install the package built for developers.
 
-#### Linux
+#### Install Swift 5.7
 
-apt-get install openssl libssl-dev
+ - Getting Started Page: https://www.swift.org/getting-started/
+ - Download page: https://www.swift.org/download/
 
 ## Configure
 
-### Windows
-Modify the Makefile.w64 to specify the OpenSSL installation path for `PATH_OPENSSL`.
-
 ### Linux
 Modify the Makefile.linux to specify the OpenSSL installation path for `PATH_OPENSSL`.
+
+### macOS
+Modify the Makefile.macos to specify the OpenSSL installation path for `PATH_OPENSSL`.
+
+### Windows
+Modify the Makefile.w64 to specify the OpenSSL installation path for `PATH_OPENSSL`.
 
 Create and download a Google Cloud service account JSON key. This program does not require any IAM roles or permissions assigned to the service account. This program signs data using the service account private key, no API calls to Google Cloud IAM are made.
 
  - https://cloud.google.com/iam/docs/creating-managing-service-account-keys
 
 ## Build
+
+### Linux
+
+Use the batch script `make.sh` or type:
+
+`make -f Makefile.linux`
+
+The C and Swift source files are compiled and the executable `gcp-sign` is placed in the build-linux directory.
+
+### macOS
+
+`make -f Makefile.macos`
+
+The C and Swift source files are compiled and the executable `gcp-sign` is placed in the build-macos directory.
 
 ### Windows
 
@@ -145,19 +167,12 @@ Use the batch script `make.bat` or type:
 
 `nmake /f Makefile.w64`
 
-The C and Swift source files are compiled and the executable `gcp-sign.exe` is placed in the build directory.
-
-### Linux
-
-Use the batch script `make.sh` or type:
-
-`nmake -f Makefile.linux`
-
-The C and Swift source files are compiled and the executable `gcp-sign` is placed in the build directory.
+The C and Swift source files are compiled and the executable `gcp-sign.exe` is placed in the build-windows directory.
 
 ## Tested Environments
- - Windows 10 - Swift version 5.7.1, Visual Studio 2022 x64
+ - Windows 10 - Swift version 5.7.1, Visual Studio 2022 x64, compiler version 19.35.32019
  - Ubuntu 22.04 - Swift version 5.7.1, gcc version 11.3.0
+ - macOS Monterey 12.6.1 (Intel) - Swift version 5.7.1, clang version 14.0.0
 
 ## Limitations
  - None

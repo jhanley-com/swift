@@ -79,7 +79,10 @@ func ProcessCommandLine() {
 		}
 
 		if arg.starts(with: "--signature=") {
-			signature_file = arg.substring(from: 12)
+			// signature_file = arg.substring(from: 12)
+			let start = arg.index(arg.startIndex, offsetBy: 12)
+			let range = start...
+			signature_file = String(arg[range])
 			continue
 		}
 

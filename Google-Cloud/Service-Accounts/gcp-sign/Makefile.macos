@@ -1,7 +1,7 @@
 # PATH_OPENSSL points to the root instalation of OpenSSL Win64
 # Default install path
-PATH_OPENSSL = /usr/include
-PATH_OPENSSL_LIB = /usr/local/lib
+PATH_OPENSSL = /usr/local/opt/openssl@1.1
+PATH_OPENSSL_LIB = /usr/local/opt/openssl@1.1/lib
 
 # Custom install paths for testing specific versions
 # PATH_OPENSSL = /openssl/openssl-1.1.1k
@@ -9,7 +9,7 @@ PATH_OPENSSL_LIB = /usr/local/lib
 
 SRC = src
 INC = h
-OUTDIR = build-linux
+OUTDIR = build-macos
 OBJDIR = $(OUTDIR)/obj
 
 # Program executable
@@ -17,7 +17,7 @@ EXE = $(OUTDIR)/gcp-sign
 
 INC_OPENSSL = "$(PATH_OPENSSL)/include"
 
-CFLAGS = -c -DOS_LINUX -Ih -I$(INC_OPENSSL)
+CFLAGS = -c -DOS_MACOS -Ih -I$(INC_OPENSSL)
 
 # swiftc compiler flags
 SWIFT_FLAGS = -Xcc -I$(INC_OPENSSL)
@@ -50,7 +50,7 @@ $(EXE): $(OBJs) $(SRC_FILES) Makefile.linux
 	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(OBJs) -o $(EXE) $(LINKER)
 
 $(OBJDIR)/openssl.o: $(SRC)/openssl.c $(INC)/c-interface.h Makefile.linux
-	gcc -c -I./h -DOS_LINUX $(SRC)/openssl.c -o$@
+	gcc $(CFLAGS) $(SRC)/openssl.c -o$@
 
 clean:
 	rm -rf $(OBJDIR)

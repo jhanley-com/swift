@@ -6,13 +6,13 @@ PATH_OPENSSL = C:\Program Files\OpenSSL-Win64
 # PATH_OPENSSL = C:\openssl-1.1.1s
 # PATH_OPENSSL = C:\openssl-3.0.7
 
-# Program executable
-EXE = $(OUTDIR)\gcp-sign.exe
-
 SRC = src
 INC = h
-OBJDIR = obj
-OUTDIR = build
+OUTDIR = build-windows
+OBJDIR = $(OUTDIR)/obj
+
+# Program executable
+EXE = $(OUTDIR)\gcp-sign.exe
 
 INC_OPENSSL = "$(PATH_OPENSSL)\include"
 
@@ -43,7 +43,7 @@ OBJs = \
 	$(OBJDIR)/applink.obj\
 	$(OBJDIR)/openssl.obj
 
-all: $(OBJDIR) $(OUTDIR) $(EXE)
+all: $(OUTDIR) $(OBJDIR) $(EXE)
 
 run: all
 	$(EXE)

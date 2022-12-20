@@ -1,6 +1,6 @@
 /*****************************************************************************
-* Date Created: 2022-12-14
-* Last Update:  2022-12-14
+* Date Created: 2022-11-22
+* Last Update:  2022-12-18
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -40,6 +40,28 @@ func ErrorText(_ msg: String) {
 	fflush(stderr)
 }
 
+// New code that replaces the "tput" functionality
+func getTerminalWindowSize() -> (Int, Int, Int) {
+#if os(Windows)
+	if _isatty(STDOUT_FILENO) == 0 {
+		return (0, 128, 100)
+	}
+#else
+	if isatty(STDOUT_FILENO) == 0 {
+		return (0, 128, 100)
+	}
+#endif
+
+	var cols: Int32 = 0
+	var rows: Int32 = 0
+
+	getConsoleWindowsSize(&cols, &rows)
+
+	return (0, Int(cols), Int(rows))
+}
+
+#if SAVE
+// Old code that uses the "tput" functionality
 func getTerminalWindowSize() -> (Int, Int, Int) {
 #if os(Windows)
 	if _isatty(STDOUT_FILENO) == 0 {
@@ -84,6 +106,7 @@ func getTerminalWindowSize() -> (Int, Int, Int) {
 
 	return (code, ncols, nlines)
 }
+#endif
 
 #if os(Windows)
 func readStdinInBinaryMode() -> Data {

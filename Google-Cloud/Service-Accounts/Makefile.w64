@@ -1,0 +1,11 @@
+all:
+	cd gcp-access-token && nmake /nologo /f Makefile.w64
+	cd gcp-sign && nmake /nologo /f Makefile.w64
+	cd gcp-verify && nmake /nologo /f Makefile.w64
+	cd Installer-windows && build.bat
+
+clean:
+	cd gcp-access-token && nmake /nologo /f Makefile.w64 clean
+	cd gcp-sign && nmake /nologo /f Makefile.w64 clean
+	cd gcp-verify && nmake /nologo /f Makefile.w64 clean
+	cd Installer-windows && clean.bat

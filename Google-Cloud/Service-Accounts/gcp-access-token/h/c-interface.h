@@ -40,6 +40,12 @@ static inline void OpenSSL_add_all_algorithms() {
 #endif
 
 typedef unsigned char byte;
+typedef unsigned int nuint32;
+#if defined(OS_WINDOWS)
+typedef __int32 nint32;
+#else
+typedef int nint32;
+#endif
 
 extern	void openssl_init(void);
 extern	void malloc_free(const void *ptr);
@@ -86,3 +92,8 @@ extern	int openssl_verify_rsa_sha256_pubkey_string(
 		int plen,		// Public key memory byte len
 		const byte *sig,	// Signature
 		size_t slen);		// Signature byte length
+
+// Functions for Win32 consoles (cmd.exe)
+extern	int setupConsole(void);
+extern	int restoreConsole(void);
+extern	int getConsoleWindowsSize(nint32 *cols, nint32 *rows);

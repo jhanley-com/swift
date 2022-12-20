@@ -8,6 +8,7 @@ PATH_OPENSSL_LIB = /usr/local/lib
 # PATH_OPENSSL_LIB = /openssl/openssl-1.1.1k
 
 SRC = src
+SRC_SHARED = ../src-shared
 INC = h
 OUTDIR = build-linux
 OBJDIR = $(OUTDIR)/obj
@@ -27,16 +28,21 @@ LINKER = -Xlinker -L$(PATH_OPENSSL_LIB) -Xlinker -lssl -Xlinker -lcrypto
 
 SRC_FILES = \
 	$(SRC)/main.swift\
-	$(SRC)/exec.swift\
-	$(SRC)/hex.swift\
-	$(SRC)/service_account.swift\
-	$(SRC)/signature.swift\
-	$(SRC)/terminal.swift\
-	$(SRC)/verify.swift\
-	$(SRC)/x509.swift 
+	$(SRC)/verify.swift
+
+SRC_SHARED_FILES = \
+	$(SRC_SHARED)/exec.swift\
+	$(SRC_SHARED)/hex.swift\
+	$(SRC_SHARED)/http.swift\
+	$(SRC_SHARED)/service_account.swift\
+	$(SRC_SHARED)/sign.swift\
+	$(SRC_SHARED)/signature.swift\
+	$(SRC_SHARED)/terminal.swift\
+	$(SRC_SHARED)/x509.swift 
 
 OBJs = \
-	$(OBJDIR)/openssl.o
+	$(OBJDIR)/openssl.o\
+	$(OBJDIR)/terminal_linux.o
 
 all: $(OUTDIR) $(OBJDIR) $(EXE)
 
@@ -46,11 +52,14 @@ $(OBJDIR):
 $(OUTDIR):
 	mkdir $(OUTDIR)
 
-$(EXE): $(OBJs) $(SRC_FILES) Makefile.linux
-	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(OBJs) -o $(EXE) $(LINKER)
+$(EXE): $(OBJs) $(SRC_FILES) $(SRC_SHARED_FILES) Makefile.linux
+	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(SRC_SHARED_FILES) $(OBJs) -o $(EXE) $(LINKER)
 
-$(OBJDIR)/openssl.o: $(SRC)/openssl.c $(INC)/c-interface.h Makefile.linux
-	gcc -c -I./h -DOS_LINUX $(SRC)/openssl.c -o$@
+$(OBJDIR)/openssl.o: $(SRC_SHARED)/openssl.c $(INC)/c-interface.h Makefile.linux
+	gcc -c -I./h -DOS_LINUX $(SRC_SHARED)/openssl.c -o$@
+
+$(OBJDIR)/terminal_linux.o: $(SRC_SHARED)/terminal_linux.c $(INC)/c-interface.h Makefile.linux
+	gcc $(CFLAGS) $(SRC_SHARED)/terminal_linux.c -o$@
 
 clean:
 	rm -rf $(OBJDIR)

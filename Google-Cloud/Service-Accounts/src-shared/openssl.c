@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Date Created: 2022-12-12
-* Last Update:  2022-12-12
+* Last Update:  2022-12-18
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -15,8 +15,10 @@
 #include "string.h"
 #include "c-interface.h"
 
+#if defined(OS_WINDOWS)
 #pragma comment(lib, "libcrypto64MD.lib")
 #pragma comment(lib, "libssl64MD.lib")
+#endif
 
 typedef unsigned char byte;
 
@@ -496,24 +498,24 @@ int		ret;
 BIO		*bufio;
 EVP_PKEY	*pubKey;
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	SSL_load_error_strings();
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	if (!data || !sig || !pkey || !plen)
 	{
 		return -1;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	pubKey = EVP_PKEY_new();
 
@@ -528,79 +530,9 @@ EVP_PKEY	*pubKey;
 		return -100;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
-
-#if defined(SAVE)
-	ret = _sign_rsa_sha256(data, dlen, pubKey, sig, slen);
-
-	if (ret != 0)
-	{
-		printf("Failed to create signature, return code %d\n", ret);
-		return ret;
-	}
-
-	// printf("Created signature\n");
-	// printf("slen: %zd\n", *slen);
-	// _print_it("Signature", sig, *slen);
-*/
-
-	printf("Created signature\n");
-	printf("slen: %zd\n", slen);
-	_print_it("Signature", sig, slen);
-
-/*
-	//****************************************
-	//
-	//****************************************
-
-EVP_PKEY_CTX	*ctx;
-
-	if ((ctx = EVP_PKEY_CTX_new(pubKey, NULL)) == NULL)
-	{
-		printf("Failed to create new context\n");
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -101;
-	}
-
-	if (EVP_PKEY_verify_init(ctx) <= 0)
-	{
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -102;
-	}
-
-	if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_NO_PADDING) <= 0)
-	{
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -103;
-	}
-
-/*
-	if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
-	{
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -103;
-	}
-
-	if (EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256()) <= 0)
-	{
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -104;
-	}
-*/
-
-	if (EVP_PKEY_verify(ctx, sig, slen, data, dlen) <= 0)
-	{
-		printf("Signature verify failed\n");
-		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-		return -105;
-	}
-#endif
-
-	//****************************************
-	//
-	//****************************************
+	// ****************************************
 
 	EVP_MD_CTX *ctx = NULL;
 
@@ -612,9 +544,9 @@ EVP_PKEY_CTX	*ctx;
 		return -2;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	ret = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pubKey);
 
@@ -625,9 +557,9 @@ EVP_PKEY_CTX	*ctx;
 		return -5;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	ret = EVP_DigestVerifyUpdate(ctx, data, dlen);
 
@@ -638,9 +570,9 @@ EVP_PKEY_CTX	*ctx;
 		return -6;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	ret = EVP_DigestVerifyFinal(ctx, sig, slen);
 
@@ -653,9 +585,9 @@ EVP_PKEY_CTX	*ctx;
 		return -7;
 	}
 
-	//****************************************
+	// ****************************************
 	//
-	//****************************************
+	// ****************************************
 
 	return 0;
 }

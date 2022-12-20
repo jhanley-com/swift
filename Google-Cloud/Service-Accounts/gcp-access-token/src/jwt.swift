@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Date Created: 2022-12-14
-* Last Update:  2022-12-14
+* Last Update:  2022-12-19
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -83,11 +83,6 @@ func create_signed_jwt(service_account_file: String, scopes: String, issued: Int
 		iat: issued,			// Issued At claim
 		exp: expires,			// Expire time
 		scope: scopes)			// Permissions
-
-/*
-	let jwt = create_jwt(header: header, payload: payload)
-	print(jwt)
-*/
 
 	let h = try! JSONEncoder().encode(header)
 	let h_b64 = h.urlSafeBase64EncodedString()

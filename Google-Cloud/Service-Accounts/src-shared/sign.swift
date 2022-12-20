@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Date Created: 2022-12-11
-* Last Update:  2022-12-11
+* Last Update:  2022-12-18
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -150,12 +150,12 @@ func sign(service_account_file: String, input: Data, output: String?, format: St
 		return -1
 	}
 
-	guard let outdata = outdata else {
+	guard let outdata else {
 		ErrorText("Error: Cannot encode signature file")
 		return -1
 	}
 
-	guard let output = output else {
+	guard let output else {
 		// This is not an error. Write the signature to stdout
 		print(outdata)
 		return 0

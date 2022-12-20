@@ -1,7 +1,7 @@
 # Create a Google OAuth Access Token
 
 ## Release Date
-December 14, 2022
+December 19, 2022
 
 ---
 ## Program License
@@ -104,7 +104,7 @@ Tested with "Win64 OpenSSL v1.1.1s" downloaded from:
 
 Note: Install the package built for developers.
 
-#### Install Swift 5.7
+#### Install Swift 5.7.2
 
  - Getting Started Page: https://www.swift.org/getting-started/
  - Download page: https://www.swift.org/download/
@@ -154,9 +154,9 @@ The C and Swift source files are compiled and the executable `gcp-access-token.e
 
 ---
 ## Tested Environments
- - Windows 10 - Swift version 5.7.1, Visual Studio 2019 x64, compiler version 19.29.30147
- - Ubuntu 22.04 - Swift version 5.7.1, gcc version 11.3.0
- - macOS Monterey 12.6.1 (Intel) - Swift version 5.7.1, clang version 14.0.0
+ - Windows 10 - Swift version 5.7.2, Visual Studio 2019 x64, compiler version 19.29.30147
+ - Ubuntu 22.04 - Swift version 5.7.2, gcc version 11.3.0
+ - macOS Monterey 12.6.1 (Intel) - Swift version 5.7, clang version 14.0.0
 
 ---
 ## Limitations
@@ -164,6 +164,13 @@ The C and Swift source files are compiled and the executable `gcp-access-token.e
    - Visual Studio 2022 x64, compiler version 19.35.32019 works.
    - Visual Studio 2022 x64, compiler version 19.35.32124 fails.
  - Solution: build with Visual Studio 2019.
+
+---
+## Known Swift Issues
+### Windows
+ - Swift will not compile source files located in a parent directory. For example, if SHARED_SRC_FILES is located at ../src-shared, swift cannot find them.
+### Linux
+ - Error message that only occurs on Linux builds. The file `openssl.o` is not modified and the build succeeds. `error: input file 'build-linux/obj/openssl.o' was modified during the build`
 
 ---
 ## Known Bugs

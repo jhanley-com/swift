@@ -7,6 +7,7 @@ PATH_OPENSSL = C:\Program Files\OpenSSL-Win64
 # PATH_OPENSSL = C:\openssl-3.0.7
 
 SRC = src
+SRC_SHARED = src-shared
 INC = h
 OUTDIR = build-windows
 OBJDIR = $(OUTDIR)/obj
@@ -31,22 +32,29 @@ LINKER = -Xlinker /LIBPATH:"$(PATH_OPENSSL)/lib/vc"
 
 SRC_FILES = \
 	$(SRC)/main.swift\
-	$(SRC)/exec.swift\
-	$(SRC)/hex.swift\
-	$(SRC)/service_account.swift\
-	$(SRC)/signature.swift\
-	$(SRC)/terminal.swift\
-	$(SRC)/verify.swift\
-	$(SRC)/x509.swift 
+	$(SRC)/verify.swift
+
+SRC_SHARED_FILES = \
+	$(SRC_SHARED)/exec.swift\
+	$(SRC_SHARED)/hex.swift\
+	$(SRC_SHARED)/http.swift\
+	$(SRC_SHARED)/service_account.swift\
+	$(SRC_SHARED)/sign.swift\
+	$(SRC_SHARED)/signature.swift\
+	$(SRC_SHARED)/terminal.swift\
+	$(SRC_SHARED)/x509.swift 
 
 OBJs = \
 	$(OBJDIR)/applink.obj\
-	$(OBJDIR)/openssl.obj
+	$(OBJDIR)/openssl.obj\
+	$(OBJDIR)/terminal_win32.obj
 
-all: $(OUTDIR) $(OBJDIR) $(EXE)
+all: src-shared $(OUTDIR) $(OBJDIR) $(EXE)
 
-run: all
-	$(EXE)
+# Swift will not compile source files located in a parent directory. For example, if SHARED_SRC_FILES is located at ../src-shared, swift cannot find them.
+src-shared:
+	mkdir src-shared
+	copy ..\src-shared src-shared
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
@@ -54,11 +62,14 @@ $(OBJDIR):
 $(OUTDIR):
 	mkdir $(OUTDIR)
 
-$(EXE): $(OBJs) $(SRC_FILES) Makefile.w64
-	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(OBJs) -o $(EXE) $(LINKER)
+$(EXE): $(OBJs) $(SRC_FILES) $(SRC_SHARED_FILES) Makefile.w64
+	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(SRC_SHARED_FILES) $(OBJs) -o $(EXE) $(LINKER)
 
-$(OBJDIR)/openssl.obj: $(SRC)/openssl.c $(INC)/c-interface.h Makefile.w64
-	cl $(CFLAGS) $(SRC)/openssl.c /Fo$@
+$(OBJDIR)/openssl.obj: $(SRC_SHARED)/openssl.c $(INC)/c-interface.h Makefile.w64
+	cl $(CFLAGS) $(SRC_SHARED)/openssl.c /Fo$@
+
+$(OBJDIR)/terminal_win32.obj: $(SRC_SHARED)/terminal_win32.c $(INC)/c-interface.h Makefile.w64
+	cl $(CFLAGS) $(SRC_SHARED)/terminal_win32.c /Fo$@
 
 $(OBJDIR)/applink.obj: $(APPLINK) Makefile.w64
 	cl $(CFLAGS) /wd4152 /wd4996 $(APPLINK) /Fo$@

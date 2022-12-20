@@ -1,0 +1,9 @@
+all:
+	cd gcp-access-token && make -f Makefile.macos
+	cd gcp-sign && make -f Makefile.macos
+	cd gcp-verify && make -f Makefile.macos
+
+clean:
+	cd gcp-access-token && make -f Makefile.macos clean
+	cd gcp-sign && make -f Makefile.macos clean
+	cd gcp-verify && make -f Makefile.macos clean

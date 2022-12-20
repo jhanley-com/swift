@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Date Created: 2022-12-14
-* Last Update:  2022-12-14
+* Last Update:  2022-12-19
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -14,7 +14,7 @@
 
 import Foundation
 
-let version = "0.90.0 (2022/12/13)"
+let version = "0.91.0 (2022/12/19)"
 
 // In debug mode, print additional information
 var arg_debug = false
@@ -56,8 +56,8 @@ func Usage() {
 	BlueText("    --scopes=scopes  Scopes to request (comma separated). Defaults to cloud-platform")
 }
 
-func ProcessEnvironment() {
-	// Process GOOGLE_APPLICATION_CREDENTIAL
+func ProcessEnvironment() -> Int32 {
+	// Process GOOGLE_APPLICATION_CREDENTIALS
 
 	var key = gcp_envVarName
 
@@ -77,18 +77,20 @@ func ProcessEnvironment() {
 			ErrorText("Error: Unexpected \(key) value: \(value)")
 		}
 	}
+
+	return 0
 }
 
-func ProcessCommandLine() {
+func ProcessCommandLine() -> Int32 {
 	for arg in CommandLine.arguments[1...] {
 		if arg == "-h" || arg == "--help" {
 			Usage()
-			exit(0)
+			return 1
 		}
 
 		if arg == "-v" || arg == "-V" || arg == "--version" {
 			Version()
-			exit(0)
+			return 1
 		}
 
 		if arg == "--debug" {
@@ -100,13 +102,19 @@ func ProcessCommandLine() {
 			let start = arg.index(arg.startIndex, offsetBy: 11)
 			let range = start...
 			let value = String(arg[range])
+
+			if value.count == 0 {
+				ErrorText("Error: Missing value for flag: --duration=")
+				return 1
+			}
+
 			if let n = Int(value) {
 				arg_duration = n
 				continue
 			} else {
 				ErrorText("Error: --duration flag must be a number")
 				ErrorText(arg)
-				exit(1)
+				return 1
 			}
 		}
 
@@ -114,6 +122,12 @@ func ProcessCommandLine() {
 			let start = arg.index(arg.startIndex, offsetBy: 6)
 			let range = start...
 			output_file = String(arg[range])
+
+			if output_file?.count == 0 {
+				ErrorText("Error: Missing value for flag: --out=")
+				return 1
+			}
+
 			continue
 		}
 
@@ -121,6 +135,12 @@ func ProcessCommandLine() {
 			let start = arg.index(arg.startIndex, offsetBy: 5)
 			let range = start...
 			gcp_sa_file = String(arg[range])
+
+			if gcp_sa_file?.count == 0 {
+				ErrorText("Error: Missing value for flag: --sa=")
+				return 1
+			}
+
 			continue
 		}
 
@@ -128,34 +148,59 @@ func ProcessCommandLine() {
 			let start = arg.index(arg.startIndex, offsetBy: 9)
 			let range = start...
 			let scopes = String(arg[range])
+
+			if scopes.count == 0 {
+				ErrorText("Error: Missing value for flag: --scopes=")
+				return 1
+			}
+
 			gcp_scopes = scopes.components(separatedBy: [" ", ","]).joined(separator: " ")
-print("Scopes: \(gcp_scopes)")
+
 			continue
 		}
 
 		if arg.starts(with: "--") {
 			ErrorText("Error: Unexpected command flag: \(arg)")
-			exit(1)
+			return 1
 		}
 
 		if arg.starts(with: "-") {
 			ErrorText("Error: Unexpected command flag: \(arg)")
-			exit(1)
+			return 1
 		}
 
 		ErrorText("Error: Unexpected command parameter: \(arg)")
-		exit(1)
+		return 1
 	}
+
+	return 0
 }
 
-func main() {
+func main() -> Int32 {
+#if os(Windows)
+	setupConsole()
+	defer {
+		restoreConsole()
+	}
+#endif
+
+	var ret: Int32 = 0
+
 	//****************************************
 	// Process environment and command line
 	//****************************************
 
-	ProcessEnvironment()
+	ret = ProcessEnvironment()
 
-	ProcessCommandLine()
+	if ret != 0 {
+		return ret
+	}
+
+	ret = ProcessCommandLine()
+
+	if ret != 0 {
+		return ret
+	}
 
 	if arg_debug {
 		DebugText("Service Account JSON Key File: \(gcp_sa_file ?? "not specified")")
@@ -167,8 +212,8 @@ func main() {
 	//****************************************
 
 	guard let gcp_sa_file else {
-		ErrorText("Error: Missing flag or environment setting for service account file")
-		exit(1)
+		ErrorText("Error: Missing command line flag or environment variable GOOGLE_APPLICATION_CREDENTIALS for service account file")
+		return 1
 	}
 
 	//****************************************
@@ -178,7 +223,7 @@ func main() {
 	let issued = Int(Date().timeIntervalSince1970)
 
 	guard let signed_jwt = create_signed_jwt(service_account_file: gcp_sa_file, scopes: gcp_scopes, issued: issued, duration: arg_duration) else {
-		exit(1)
+		return 1
 	}
 
 	if arg_debug {
@@ -192,7 +237,7 @@ func main() {
 	//****************************************
 
 	guard var token = exchangeJwtForAccessToken(signed_jwt) else {
-		exit(1)
+		return 1
 	}
 
 	token.issued = issued;
@@ -216,13 +261,13 @@ func main() {
 
 		guard let outdata = String(data: d, encoding: .utf8) else {
 			ErrorText("Error: Cannot convert data to string")
-			exit(1)
+			return 1
 		}
 
 		guard let output_file else {
 			// This is not an error. Write the AuthToken to stdout
 			print(outdata)
-			exit(0)
+			return 0
 		}
 
 		// Write to file
@@ -230,18 +275,20 @@ func main() {
 		do {
 			print("Writing signature to \(output_file)")
 			try outdata.write(toFile: output_file, atomically: false, encoding: .utf8)
+			return 0
 		}
 		catch {
 			print(outdata)
 			ErrorText(error.localizedDescription)
 			ErrorText("Error: Cannot write AuthToken to file")
-			exit(1)
+			return 1
 		}
 	}
 	catch {
 		ErrorText(error.localizedDescription)
-		exit(1)
+		return 1
 	}
 }
 
-main()
+
+exit(main())

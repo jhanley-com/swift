@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Date Created: 2022-12-12
-* Last Update:  2022-12-12
+* Last Update:  2022-12-19
 * https://www.jhanley.com
 * Copyright (c) 2020, John J. Hanley
 * Author: John J. Hanley
@@ -14,7 +14,7 @@
 
 import Foundation
 
-let version = "0.90.0 (2022/12/12)"
+let version = "0.91.0 (2022/12/19)"
 
 // In debug mode, print additional information
 var arg_debug = false
@@ -54,8 +54,8 @@ func Usage() {
 	BlueText("    --format=format  Signature format. base64 (default), base64url, hex")
 }
 
-func ProcessEnvironment() {
-	// Process GOOGLE_APPLICATION_CREDENTIAL
+func ProcessEnvironment() -> Int32 {
+	// Process GOOGLE_APPLICATION_CREDENTIALS
 
 	var key = gcp_envVarName
 
@@ -75,18 +75,20 @@ func ProcessEnvironment() {
 			ErrorText("Error: Unexpected \(key) value: \(value)")
 		}
 	}
+
+	return 0
 }
 
-func ProcessCommandLine() {
+func ProcessCommandLine() -> Int32 {
 	for arg in CommandLine.arguments[1...] {
 		if arg == "-h" || arg == "--help" {
 			Usage()
-			exit(0)
+			return 1
 		}
 
 		if arg == "-v" || arg == "-V" || arg == "--version" {
 			Version()
-			exit(0)
+			return 1
 		}
 
 		if arg == "--debug" {
@@ -95,7 +97,6 @@ func ProcessCommandLine() {
 		}
 
 		if arg.starts(with: "--sa=") {
-			// gcp_sa_file = arg.substring(from: 5)
 			let start = arg.index(arg.startIndex, offsetBy: 5)
 			let range = start...
 			gcp_sa_file = String(arg[range])
@@ -103,7 +104,6 @@ func ProcessCommandLine() {
 		}
 
 		if arg.starts(with: "--signature=") {
-			// output_file = arg.substring(from: 12)
 			let start = arg.index(arg.startIndex, offsetBy: 12)
 			let range = start...
 			output_file = String(arg[range])
@@ -111,7 +111,6 @@ func ProcessCommandLine() {
 		}
 
 		if arg.starts(with: "--format=") {
-			// let format = arg.substring(from: 9)
 			let start = arg.index(arg.startIndex, offsetBy: 9)
 			let range = start...
 			let format = String(arg[range])
@@ -132,12 +131,12 @@ func ProcessCommandLine() {
 
 		if arg.starts(with: "--") {
 			ErrorText("Error: Unexpected command flag: \(arg)")
-			exit(1)
+			return 1
 		}
 
 		if arg.starts(with: "-") {
 			ErrorText("Error: Unexpected command flag: \(arg)")
-			exit(1)
+			return 1
 		}
 
 		if input_file == nil {
@@ -146,18 +145,37 @@ func ProcessCommandLine() {
 		}
 
 		ErrorText("Error: Unexpected command parameter: \(arg)")
-		exit(1)
+		return 1
 	}
+
+	return 0
 }
 
-func main() {
+func main() -> Int32 {
+#if os(Windows)
+	setupConsole()
+	defer {
+		restoreConsole()
+	}
+#endif
+
+	var ret: Int32 = 0
+
 	//****************************************
 	// Process environment and command line
 	//****************************************
 
-	ProcessEnvironment()
+	ret = ProcessEnvironment()
 
-	ProcessCommandLine()
+	if ret != 0 {
+		return ret
+	}
+
+	ret = ProcessCommandLine()
+
+	if ret != 0 {
+		return ret
+	}
 
 	if arg_debug {
 		DebugText("Service Account JSON Key File: \(gcp_sa_file ?? "not specified")")
@@ -168,9 +186,9 @@ func main() {
 	// Google Cloud Service Account JSON file
 	//****************************************
 
-	guard let gcp_sa_file = gcp_sa_file else {
-		ErrorText("Error: Missing flag or environment setting for service account file")
-		exit(1)
+	guard let gcp_sa_file else {
+		ErrorText("Error: Missing command line flag or environment variable GOOGLE_APPLICATION_CREDENTIALS for service account file")
+		return 1
 	}
 
 	//****************************************
@@ -179,14 +197,14 @@ func main() {
 
 	var input = Data()
 
-	if let input_file = input_file {
+	if let input_file {
 		do {
 			input = try Data(contentsOf: URL(fileURLWithPath: input_file))
 		}
 		catch {
 			ErrorText(error.localizedDescription)
 			ErrorText("Error: Cannot read input file \(input_file)")
-			exit(1)
+			return 1
 		}
 	} else {
 		input = readStdinInBinaryMode()
@@ -196,9 +214,9 @@ func main() {
 	// Sign
 	//****************************************
 
-	let ret = sign(service_account_file: gcp_sa_file, input: input, output: output_file, format: signature_format)
+	ret = Int32(sign(service_account_file: gcp_sa_file, input: input, output: output_file, format: signature_format))
 
-	exit(Int32(ret))
+	return ret
 }
 
-main()
+exit(main())

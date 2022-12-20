@@ -1,7 +1,7 @@
 # Sign data using a Google Cloud service account
 
 ## Release Date
-December 12, 2022
+December 19, 2022
 
 ## Program License
 
@@ -123,7 +123,7 @@ Tested with "Win64 OpenSSL v1.1.1s" downloaded from:
 
 Note: Install the package built for developers.
 
-#### Install Swift 5.7
+#### Install Swift 5.7.2
 
  - Getting Started Page: https://www.swift.org/getting-started/
  - Download page: https://www.swift.org/download/
@@ -170,9 +170,9 @@ Use the batch script `make.bat` or type:
 The C and Swift source files are compiled and the executable `gcp-sign.exe` is placed in the build-windows directory.
 
 ## Tested Environments
- - Windows 10 - Swift version 5.7.1, Visual Studio 2022 x64, compiler version 19.35.32019
- - Ubuntu 22.04 - Swift version 5.7.1, gcc version 11.3.0
- - macOS Monterey 12.6.1 (Intel) - Swift version 5.7.1, clang version 14.0.0
+ - Windows 10 - Swift version 5.7.2, Visual Studio 2022 x64, compiler version 19.35.32019
+ - Ubuntu 22.04 - Swift version 5.7.2, gcc version 11.3.0
+ - macOS Monterey 12.6.1 (Intel) - Swift version 5.7, clang version 14.0.0
 
 ## Limitations
  - None

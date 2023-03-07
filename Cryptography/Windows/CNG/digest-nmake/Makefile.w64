@@ -1,0 +1,109 @@
+# default build target is "all". This builds the program.
+#
+# optional build targets:
+#   installer	- build program and Windows setup installer.
+#   install	- build program and installer. Run the installer.
+#   test	- build program and run tests.
+
+OUTDIR = build-windows
+
+# Program executable
+EXE = $(OUTDIR)\digest.exe
+
+OBJDIR = $(OUTDIR)/obj
+SRC = src
+INC = h
+
+# Inno Setup Compiler
+ISCC = "C:\Program Files (x86)\Inno Setup 6\iscc"
+
+CFLAGS = /nologo /c /MD /DOS_WINDOWS /W4 -Ih
+
+# /MD    Links to multithreaded DLL using MSVCRT.lib.
+# /MDd   Links to debug multithreaded DLL using MSVCRTD.lib.
+
+# swiftc compiler flags
+# -O                      Compile with optimizations
+# -static-stdlib          Statically link the Swift standard library
+# -static-executable      Statically link the executable
+
+# SWIFT_FLAGS = -O -static-stdlib
+# SWIFT_FLAGS = -O -static-executable
+SWIFT_FLAGS = -O
+
+# Microsoft linker flags
+LINKER_FLAGS =
+
+############################################################
+# default build target
+all: $(EXE)
+
+# Optional build target
+installer: $(EXE) DLLs VC VC/vc_redist.x64.exe setup.iss
+	$(ISCC) /Qp setup.iss
+
+# Optional build target
+install: installer
+	$(OUTDIR)\digest-installer.exe
+
+# Optional build target
+test: $(EXE)
+	$(OUTDIR)\digest --test
+############################################################
+
+SRC_FILES = \
+	$(SRC)/cmdline.swift\
+	$(SRC)/digest.swift\
+	$(SRC)/encoding.swift\
+	$(SRC)/exec.swift\
+	$(SRC)/main.swift\
+	$(SRC)/test.swift\
+	$(SRC)/terminal.swift\
+	$(SRC)/utils.swift
+
+OBJs = \
+	$(OBJDIR)/win32.obj\
+	$(OBJDIR)/terminal_win32.obj
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
+
+$(OUTDIR):
+	mkdir $(OUTDIR)
+
+$(EXE): $(OUTDIR) $(OBJDIR) $(OBJs) $(SRC_FILES) Makefile.w64
+	swiftc $(SWIFT_FLAGS) -import-objc-header $(INC)/c-interface.h $(SRC_FILES) $(OBJs) -o $(EXE) $(LINKER_FLAGS)
+
+$(OBJDIR)/win32.obj: $(SRC)/win32.c $(INC)/c-interface.h Makefile.w64
+	cl $(CFLAGS) $(SRC)/win32.c /Fo$@
+
+$(OBJDIR)/terminal_win32.obj: $(SRC)/terminal_win32.c $(INC)/c-interface.h Makefile.w64
+	cl $(CFLAGS) $(SRC)/terminal_win32.c /Fo$@
+
+DLLs:
+	mkdir DLLs
+	copy C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin\BlocksRuntime.dll DLLs /v
+	copy C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin\dispatch.dll DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\Foundation.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\FoundationNetworking.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\swiftCore.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\swiftCRT.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\swiftDispatch.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\swiftSwiftOnoneSupport.dll" DLLs /v
+	copy "C:\Program Files\swift\runtime-development\usr\bin\swiftWinSDK.dll" DLLs /v
+	copy "C:\Program Files\swift\icu-69.1\usr\bin\icudt69.dll" DLLs /v
+	copy "C:\Program Files\swift\icu-69.1\usr\bin\icuin69.dll" DLLs /v
+	copy "C:\Program Files\swift\icu-69.1\usr\bin\icuuc69.dll" DLLs /v
+
+VC:
+	mkdir VC
+	wget https://aka.ms/vs/17/release/vc_redist.x64.exe -O VC/vc_redist.x64.exe
+
+.PHONY: clean   
+clean:
+	rm -rf VC
+	rm -rf DLLs
+	rm -rf $(OBJDIR)
+	rm -rf $(OUTDIR)
+	rm -rf *.data
+	rm -rf *.out

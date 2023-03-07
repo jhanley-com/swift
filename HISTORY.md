@@ -10,3 +10,4 @@
  - 2022-12-12 - gcp-sign: Sign data using a Google Cloud service account JSON key file
  - 2022-12-12 - gcp-verify: Verify data using a Google Cloud service account certificate
  - 2022-12-12 - gcp-access-token: Create a Google OAuth Access Token
+ - 2023-03-06 - digest-nmake: Windows CNG Digest program
